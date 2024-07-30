@@ -15,11 +15,19 @@ run/main_scene="res://Scenes/Game.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+FullscreenControl="*res://addons/fullscreen_control/FullscreenControl.gd"
+
 [display]
 
 window/size/viewport_width=640
 window/size/viewport_height=320
 window/stretch/mode="viewport"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/fullscreen_control/plugin.cfg")
 
 [input]
 

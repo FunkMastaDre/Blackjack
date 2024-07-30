@@ -1,8 +1,8 @@
 extends Node2D
 
-var player_hand = []
-var dealer_hand = []
-var round_one = true
+var player_hand : Array = []
+var dealer_hand : Array = []
+var round_one : bool = true
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -32,7 +32,7 @@ func draw_card(player) -> void:
 	var suits = ["Hearts", "Diamonds", "Clubs", "Spades"]
 	var values = ["A", "2", "3", "4", "5", "6","7", "8", "9", "10", "J", "Q", "K"]
 	
-	# Preload scene and pick random suit and value.
+	# Preload scene and pick random suit and value. Pass this along to the card class.
 	var scene = preload("res://Scenes/card.tscn")
 	var random_card = scene.instantiate()
 	random_card.suit = suits.pick_random()
@@ -49,6 +49,7 @@ func draw_card(player) -> void:
 		random_card.global_position = $Player/Card_spawner.global_position
 		player_hand.append(random_card.value)
 
+
 # Draws a blank card for the dealer at the beginning of the game.
 func draw_blank_card() -> void:
 	var scene = preload("res://Scenes/card.tscn")
@@ -56,15 +57,24 @@ func draw_blank_card() -> void:
 	$Dealer/Cards.add_child(blank_card)
 	blank_card.global_position = $Dealer/Card_spawner.global_position
 
+
 func player_round() -> void:
+	# Count the players hand
 	var hand = count_hand(player_hand)
 	$UI/Player_score.text = str(hand)
+	
+	# If you already have blackjack, dealer players
 	if hand == 21:
 		dealer_round()
+	
+	# If you have over 21, you lose.
 	elif hand > 21:
 		bust()
+	
+	# Otherwise, make the buttons visible so the player can Hit, Stand, or Double Down.
 	else:
 		ui_toggle(false)
+
 
 # Count the value of the hand
 func count_hand(hand) -> int:
@@ -80,11 +90,13 @@ func count_hand(hand) -> int:
 			score += int(item)
 	return score
 
+
 # Get the Value of an Ace depending on what your current score is.
 func ace_value(score, ace_counted) -> int:
 	if score < 11 and ace_counted != true:
 		return 11
 	return 1
+
 
 func dealer_round() -> void:
 	ui_toggle(true)
@@ -107,10 +119,14 @@ func dealer_round() -> void:
 	
 	determine_winner()
 
+
 func determine_winner() -> void:
 	var winner_text
+	# Track player and dealer's score
 	var player_score = count_hand(player_hand)
 	var dealer_score = count_hand(dealer_hand)
+	
+	# Each winning, lose, or tie condition.
 	if dealer_score > 21:
 		winner_text = "Dealer Bust! You win!"
 	elif player_score > dealer_score:
@@ -122,6 +138,8 @@ func determine_winner() -> void:
 		winner_text = "Dealer wins"
 	else:
 		winner_text = "Push"
+	
+	# Winner text appears. Show play again button
 	$UI/Winner.text = winner_text
 	$UI/Play_again.show()
 
@@ -130,6 +148,7 @@ func determine_winner() -> void:
 func bust() -> void:
 	$UI/Winner.text = "BUST! Dealer wins"
 	$UI/Play_again.show()
+
 
 # Toggles UI on or off
 func ui_toggle(boolean):
@@ -141,6 +160,7 @@ func ui_toggle(boolean):
 			$"UI/Buttons/Double Down".hide()
 
 
+# When hit button is pressed, draw one card
 func _on_hit_pressed() -> void:
 	round_one = false
 	ui_toggle(true)
@@ -149,14 +169,17 @@ func _on_hit_pressed() -> void:
 	player_round()
 
 
+# When stand button is pressed, go to dealer round
 func _on_stand_pressed() -> void:
 	dealer_round()
 
 
+# Reload game when play again button is pressed.
 func _on_play_again_pressed() -> void:
 	get_tree().reload_current_scene()
 
 
+# When double down is pressed, draw one card and end the round.
 func _on_double_down_pressed() -> void:
 	ui_toggle(true)
 	draw_card(1)
