@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://1j4sxogjnhll"]
+
+[ext_resource type="Texture2D" uid="uid://b7pmrmk5vlk53" path="res://Assets/Cards/Card Back 2.png" id="1_3kng8"]
+[ext_resource type="Script" path="res://Scripts/card.gd" id="2_bx0io"]
+
+[node name="Card" type="Sprite2D"]
+texture_filter = 1
+texture_repeat = 1
+scale = Vector2(2, 2)
+texture = ExtResource("1_3kng8")
+script = ExtResource("2_bx0io")
